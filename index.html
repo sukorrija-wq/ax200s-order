@@ -7,34 +7,44 @@
 <style>
 body {
   font-family: Arial;
-  max-width: 900px;
+  max-width: 1000px;
   margin: auto;
   padding: 20px;
   background: #0f0f0f;
   color: white;
 }
 
-h1 { text-align: center; color: #00ff88; }
+h1 {
+  text-align: center;
+  color: #ff0000;
+}
+
+h2 {
+  text-align: center;
+  margin-top: 40px;
+}
 
 input, select, textarea {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   margin: 5px 0 15px 0;
   border-radius: 5px;
   border: none;
 }
 
 button {
-  padding: 10px;
-  background: #00ff88;
+  padding: 12px;
+  background: red;
+  color: white;
   border: none;
   cursor: pointer;
   font-weight: bold;
   border-radius: 5px;
+  width: 100%;
 }
 
 button:hover {
-  background: #00cc6a;
+  background: darkred;
 }
 
 .item-box {
@@ -42,13 +52,22 @@ button:hover {
   padding: 10px;
   margin-top: 10px;
   border-radius: 5px;
+  background: #1a1a1a;
 }
 
 .total {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: bold;
   margin-top: 20px;
   color: #00ff88;
+  text-align: center;
+}
+
+img {
+  display: block;
+  margin: 20px auto;
+  border-radius: 10px;
+  max-width: 100%;
 }
 </style>
 </head>
@@ -57,16 +76,27 @@ button:hover {
 
 <h1>Tempahan Baju AX200S Family Terengganu 2.0</h1>
 
-<h2>Maklumat Pelanggan</h2>
-
-<input type="text" id="nama" placeholder="Nama Penuh" required>
-<input type="text" id="phone" placeholder="No HP (contoh 60123456789)" required>
-<textarea id="alamat" placeholder="Alamat (Isi jika perlu postage)"></textarea>
-
-<h3>Link Resit Pembayaran (Google Drive)</h3>
-<input type="text" id="resit" placeholder="Paste link resit di sini">
+<img src="logo-ax200s.png" style="width:250px;">
 
 <hr>
+
+<h2>Design Baju</h2>
+<img src="baju-ax200s.jpg" style="max-width:700px;">
+
+<h2>Tambahan Harga Saiz Besar</h2>
+<img src="harga-saiz-besar.jpg" style="max-width:500px;">
+
+<h2>Size Chart</h2>
+<img src="size-chart.jpg">
+
+<hr>
+
+<h2>Maklumat Pelanggan</h2>
+
+<input type="text" id="nama" placeholder="Nama Penuh">
+<input type="text" id="phone" placeholder="No HP (contoh 60123456789)">
+<textarea id="alamat" placeholder="Alamat (Isi jika perlu postage)"></textarea>
+<input type="text" id="resit" placeholder="Link Resit (Google Drive)">
 
 <h2>Tambah Item Tempahan</h2>
 
@@ -96,6 +126,7 @@ Jumlah Keseluruhan: RM <span id="total">0</span>
 </div>
 
 <br>
+
 <button onclick="hantarOrder()">Hantar Tempahan</button>
 
 <script>
@@ -165,7 +196,7 @@ function hantarOrder() {
 
   let orderDetail = orderList.join(" | ");
 
-  // ====== HANTAR KE GOOGLE SHEET ======
+  // ==== HANTAR KE GOOGLE SHEET ====
   fetch("PASTE_GOOGLE_SCRIPT_URL_DI_SINI", {
     method: "POST",
     body: JSON.stringify({
@@ -178,7 +209,7 @@ function hantarOrder() {
     })
   });
 
-  // ====== FORMAT WHATSAPP ======
+  // ==== FORMAT WHATSAPP ====
   let message =
     "Tempahan AX200S Family Terengganu 2.0\n\n" +
     "Nama: " + nama + "\n" +
