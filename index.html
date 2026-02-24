@@ -2,72 +2,42 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>AX200S Family Terengganu 2.0</title>
+<title>Tempahan Baju AX200S 2.0</title>
 
 <style>
 body {
   font-family: Arial;
-  max-width: 1000px;
+  max-width: 900px;
   margin: auto;
   padding: 20px;
-  background: #0f0f0f;
-  color: white;
 }
 
 h1 {
   text-align: center;
-  color: red;
 }
 
-h2 {
-  text-align: center;
-  margin-top: 40px;
-}
-
-input, select, textarea {
+input, select {
   width: 100%;
   padding: 10px;
-  margin: 5px 0 15px 0;
-  border-radius: 5px;
-  border: none;
+  margin-bottom: 15px;
 }
 
 button {
-  padding: 12px;
-  background: red;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  border-radius: 5px;
+  padding: 10px;
   width: 100%;
-}
-
-button:hover {
-  background: darkred;
+  cursor: pointer;
 }
 
 .item-box {
-  border: 1px solid #333;
+  border: 1px solid #ccc;
   padding: 10px;
-  margin-top: 10px;
-  border-radius: 5px;
-  background: #1a1a1a;
+  margin-top: 5px;
 }
 
 .total {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   margin-top: 20px;
-  color: #00ff88;
-  text-align: center;
-}
-
-img {
-  display: block;
-  margin: 20px auto;
-  border-radius: 10px;
-  max-width: 100%;
 }
 </style>
 </head>
@@ -76,42 +46,11 @@ img {
 
 <h1>Tempahan Baju AX200S Family Terengganu 2.0</h1>
 
-<img src="logo-ax200s.png" style="width:250px;">
-
-<hr>
-
-<h2>Design Baju</h2>
-<img src="baju-ax200s.jpg" style="max-width:700px;">
-
-<h2>Tambahan Harga Saiz Besar</h2>
-<img src="harga-saiz-besar.jpg" style="max-width:500px;">
-
-<h2>Size Chart</h2>
-<img src="size-chart.jpg">
-
-<hr>
-
-<h2>Sila Buat Pembayaran</h2>
-<p style="text-align:center;">
-Scan QR di bawah untuk membuat pembayaran.
-</p>
-
-<img src="qr-payment.png" style="width:300px;">
-
-<p style="text-align:center; font-weight:bold; color:#00ff88;">
-Selepas bayar, upload resit di bawah.
-</p>
-
-<hr>
-
 <h2>Maklumat Pelanggan</h2>
-
 <input type="text" id="nama" placeholder="Nama Penuh">
-<input type="text" id="phone" placeholder="No HP Admin (contoh 60123456789)">
-<textarea id="alamat" placeholder="Alamat (Isi jika perlu postage)"></textarea>
-<input type="file" id="resit">
+<input type="text" id="phone" placeholder="No HP">
 
-<h2>Tambah Item Tempahan</h2>
+<h2>Tambah Item</h2>
 
 <select id="kategori">
 <option value="dewasa_pendek">Dewasa Lengan Pendek (RM35)</option>
@@ -139,7 +78,6 @@ Jumlah Keseluruhan: RM <span id="total">0</span>
 </div>
 
 <br>
-
 <button onclick="hantarOrder()">Hantar Tempahan</button>
 
 <script>
@@ -174,27 +112,24 @@ function tambahItem() {
   let saiz = document.getElementById("saiz").value;
   let qty = parseInt(document.getElementById("qty").value);
 
-  if (qty <= 0) {
-    alert("Masukkan kuantiti yang betul.");
-    return;
-  }
+  if (qty <= 0) return;
 
   let harga = kiraHarga(kategori, saiz);
   let jumlah = harga * qty;
 
   total += jumlah;
 
-  let detailText =
+  let detail =
     kategori.replace("_"," ").toUpperCase() +
     " - " + saiz +
     " x " + qty +
     " = RM" + jumlah;
 
-  orderList.push(detailText);
+  orderList.push(detail);
 
   let div = document.createElement("div");
   div.className = "item-box";
-  div.innerHTML = detailText;
+  div.innerHTML = detail;
 
   document.getElementById("senarai").appendChild(div);
   document.getElementById("total").innerText = total;
@@ -206,46 +141,28 @@ function hantarOrder() {
 
   let nama = document.getElementById("nama").value;
   let phone = document.getElementById("phone").value;
-  let alamat = document.getElementById("alamat").value;
-  let fileInput = document.getElementById("resit");
 
-  if (!nama || orderList.length === 0) {
-    alert("Sila lengkapkan maklumat.");
+  if (!nama || !phone || orderList.length === 0) {
+    alert("Sila lengkapkan maklumat dan tambah item.");
     return;
   }
 
-  let file = fileInput.files[0];
+  fetch("https://script.google.com/macros/s/AKfycbySfoJvZOm0KefXhZPwmlPIcbtIOaficju6DmL7jrOymIgn4rH_fKgk0qozzEMFf3_T/exec", {
+    method: "POST",
+    body: JSON.stringify({
+      nama: nama,
+      phone: phone,
+      orderDetail: orderList.join(" | "),
+      total: total
+    })
+  });
 
-  if (!file) {
-    alert("Sila upload resit.");
-    return;
-  }
+  alert("Tempahan berjaya dihantar!");
 
-  let reader = new FileReader();
-
-  reader.onload = function() {
-
-    let base64 = reader.result.split(',')[1];
-
-    fetch("https://script.google.com/macros/s/AKfycbyPQfGyK4PHuJjU8p7Aisfc-bKNvRH7gei4kVbwkRByJbvin4id5SLDxZ8vROLiE301MA/exec", {
-      method: "POST",
-      body: JSON.stringify({
-        nama: nama,
-        phone: phone,
-        alamat: alamat,
-        orderDetail: orderList.join(" | "),
-        total: total,
-        resitBase64: base64,
-        fileName: file.name,
-        fileType: file.type
-      })
-    });
-
-    alert("Tempahan berjaya dihantar!");
-
-  };
-
-  reader.readAsDataURL(file);
+  document.getElementById("senarai").innerHTML = "";
+  document.getElementById("total").innerText = "0";
+  total = 0;
+  orderList = [];
 }
 
 </script>
