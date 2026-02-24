@@ -7,13 +7,21 @@
 <style>
 body {
   font-family: Arial;
-  max-width: 900px;
+  max-width: 1000px;
   margin: auto;
   padding: 20px;
+  background: #f5f5f5;
 }
 
 h1 {
   text-align: center;
+}
+
+.section {
+  background: white;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 8px;
 }
 
 input, select {
@@ -36,7 +44,7 @@ button:hover {
 }
 
 .item-box {
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   padding: 10px;
   margin-top: 5px;
 }
@@ -53,11 +61,14 @@ button:hover {
 
 <h1>Tempahan Baju AX200S Family Terengganu 2.0</h1>
 
+<div class="section">
 <h2>Maklumat Pelanggan</h2>
 <input type="text" id="nama" placeholder="Nama Penuh">
 <input type="text" id="phone" placeholder="No HP">
 <input type="text" id="alamat" placeholder="Alamat (Isi jika perlu postage)">
+</div>
 
+<div class="section">
 <h2>Tambah Item</h2>
 
 <select id="kategori">
@@ -87,6 +98,7 @@ Jumlah Keseluruhan: RM <span id="total">0</span>
 
 <br>
 <button onclick="hantarOrder()">Hantar Tempahan</button>
+</div>
 
 <script>
 
@@ -158,19 +170,28 @@ function hantarOrder() {
 
   let orderText = orderList.join(" | ");
 
-  // Hantar ke Google Sheet
-  fetch("https://script.google.com/macros/s/AKfycbySfoJvZOm0KefXhZPwmlPIcbtIOaficju6DmL7jrOymIgn4rH_fKgk0qozzEMFf3_T/exec", {
-    method: "POST",
-    body: JSON.stringify({
-      nama: nama,
-      phone: phone,
-      alamat: alamat,
-      orderDetail: orderText,
-      total: total
-    })
+  // FORM POST (CORS SAFE)
+  let form = document.createElement("form");
+  form.method = "POST";
+  form.action = "https://script.google.com/macros/s/AKfycbz1Yw9afrtB77AlVSOChHs6KNrZTdizyy0SQK37_FfS9OD5PkdIRgWZFp0P3XchFKRc/exec";
+  form.target = "_blank";
+
+  let input = document.createElement("input");
+  input.type = "hidden";
+  input.name = "data";
+  input.value = JSON.stringify({
+    nama: nama,
+    phone: phone,
+    alamat: alamat,
+    orderDetail: orderText,
+    total: total
   });
 
-  // Format mesej WhatsApp
+  form.appendChild(input);
+  document.body.appendChild(form);
+  form.submit();
+
+  // WhatsApp ke Sukor
   let message =
     "Tempahan AX200S Family Terengganu 2.0\n\n" +
     "Nama: " + nama + "\n" +
@@ -179,17 +200,10 @@ function hantarOrder() {
     orderText + "\n\n" +
     "Jumlah: RM" + total;
 
-  let encodedMessage = encodeURIComponent(message);
-
-  // WhatsApp ke Sukor
-  window.open("https://wa.me/60169514414?text=" + encodedMessage);
+  let encoded = encodeURIComponent(message);
+  window.open("https://wa.me/60169514414?text=" + encoded);
 
   alert("Tempahan berjaya dihantar!");
-
-  document.getElementById("senarai").innerHTML = "";
-  document.getElementById("total").innerText = "0";
-  total = 0;
-  orderList = [];
 }
 
 </script>
