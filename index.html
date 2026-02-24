@@ -99,7 +99,7 @@ Scan QR di bawah untuk membuat pembayaran.
 <img src="qr-payment.png" style="width:300px;">
 
 <p style="text-align:center; font-weight:bold; color:#00ff88;">
-Selepas bayar, paste link resit di bawah.
+Selepas bayar, upload resit di bawah.
 </p>
 
 <hr>
@@ -109,7 +109,7 @@ Selepas bayar, paste link resit di bawah.
 <input type="text" id="nama" placeholder="Nama Penuh">
 <input type="text" id="phone" placeholder="No HP Admin (contoh 60123456789)">
 <textarea id="alamat" placeholder="Alamat (Isi jika perlu postage)"></textarea>
-<input type="text" id="resit" placeholder="Link Resit (Google Drive)">
+<input type="file" id="resit">
 
 <h2>Tambah Item Tempahan</h2>
 
@@ -174,7 +174,10 @@ function tambahItem() {
   let saiz = document.getElementById("saiz").value;
   let qty = parseInt(document.getElementById("qty").value);
 
-  if (qty <= 0) return;
+  if (qty <= 0) {
+    alert("Masukkan kuantiti yang betul.");
+    return;
+  }
 
   let harga = kiraHarga(kategori, saiz);
   let jumlah = harga * qty;
@@ -189,10 +192,14 @@ function tambahItem() {
 
   orderList.push(detailText);
 
-  document.getElementById("senarai").innerHTML +=
-    "<div class='item-box'>" + detailText + "</div>";
+  let div = document.createElement("div");
+  div.className = "item-box";
+  div.innerHTML = detailText;
 
+  document.getElementById("senarai").appendChild(div);
   document.getElementById("total").innerText = total;
+
+  document.getElementById("qty").value = 1;
 }
 
 function hantarOrder() {
@@ -200,43 +207,45 @@ function hantarOrder() {
   let nama = document.getElementById("nama").value;
   let phone = document.getElementById("phone").value;
   let alamat = document.getElementById("alamat").value;
-  let resit = document.getElementById("resit").value;
+  let fileInput = document.getElementById("resit");
 
-  if (!nama || !phone || orderList.length === 0) {
-    alert("Sila lengkapkan maklumat dan tambah item.");
+  if (!nama || orderList.length === 0) {
+    alert("Sila lengkapkan maklumat.");
     return;
   }
 
-  let orderDetail = orderList.join(" | ");
+  let file = fileInput.files[0];
 
-  // ===== GOOGLE SHEET INTEGRATION =====
-  fetch("https://script.google.com/macros/s/AKfycbyPQfGyK4PHuJjU8p7Aisfc-bKNvRH7gei4kVbwkRByJbvin4id5SLDxZ8vROLiE301MA/exec", {
-    method: "POST",
-    body: JSON.stringify({
-      nama: nama,
-      phone: phone,
-      alamat: alamat,
-      orderDetail: orderDetail,
-      total: total,
-      resit: resit
-    })
-  });
+  if (!file) {
+    alert("Sila upload resit.");
+    return;
+  }
 
-  // ===== WHATSAPP ADMIN =====
-  let message =
-    "Tempahan AX200S Family Terengganu 2.0\n\n" +
-    "Nama: " + nama + "\n" +
-    "Alamat: " + alamat + "\n\n" +
-    orderDetail + "\n\n" +
-    "Jumlah: RM" + total + "\n" +
-    "Resit: " + resit;
+  let reader = new FileReader();
 
-  let encoded = encodeURIComponent(message);
+  reader.onload = function() {
 
-  window.open("https://wa.me/" + phone + "?text=" + encoded);
+    let base64 = reader.result.split(',')[1];
 
-  alert("Tempahan dihantar!");
+    fetch("https://script.google.com/macros/s/AKfycbyPQfGyK4PHuJjU8p7Aisfc-bKNvRH7gei4kVbwkRByJbvin4id5SLDxZ8vROLiE301MA/exec", {
+      method: "POST",
+      body: JSON.stringify({
+        nama: nama,
+        phone: phone,
+        alamat: alamat,
+        orderDetail: orderList.join(" | "),
+        total: total,
+        resitBase64: base64,
+        fileName: file.name,
+        fileType: file.type
+      })
+    });
 
+    alert("Tempahan berjaya dihantar!");
+
+  };
+
+  reader.readAsDataURL(file);
 }
 
 </script>
