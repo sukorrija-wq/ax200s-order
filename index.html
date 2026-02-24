@@ -23,9 +23,16 @@ input, select {
 }
 
 button {
-  padding: 10px;
+  padding: 12px;
   width: 100%;
   cursor: pointer;
+  background: black;
+  color: white;
+  border: none;
+}
+
+button:hover {
+  background: #333;
 }
 
 .item-box {
@@ -49,6 +56,7 @@ button {
 <h2>Maklumat Pelanggan</h2>
 <input type="text" id="nama" placeholder="Nama Penuh">
 <input type="text" id="phone" placeholder="No HP">
+<input type="text" id="alamat" placeholder="Alamat (Isi jika perlu postage)">
 
 <h2>Tambah Item</h2>
 
@@ -141,21 +149,40 @@ function hantarOrder() {
 
   let nama = document.getElementById("nama").value;
   let phone = document.getElementById("phone").value;
+  let alamat = document.getElementById("alamat").value;
 
   if (!nama || !phone || orderList.length === 0) {
     alert("Sila lengkapkan maklumat dan tambah item.");
     return;
   }
 
+  let orderText = orderList.join(" | ");
+
+  // Hantar ke Google Sheet
   fetch("https://script.google.com/macros/s/AKfycbySfoJvZOm0KefXhZPwmlPIcbtIOaficju6DmL7jrOymIgn4rH_fKgk0qozzEMFf3_T/exec", {
     method: "POST",
     body: JSON.stringify({
       nama: nama,
       phone: phone,
-      orderDetail: orderList.join(" | "),
+      alamat: alamat,
+      orderDetail: orderText,
       total: total
     })
   });
+
+  // Format mesej WhatsApp
+  let message =
+    "Tempahan AX200S Family Terengganu 2.0\n\n" +
+    "Nama: " + nama + "\n" +
+    "No HP: " + phone + "\n" +
+    "Alamat: " + (alamat ? alamat : "Ambil Sendiri") + "\n\n" +
+    orderText + "\n\n" +
+    "Jumlah: RM" + total;
+
+  let encodedMessage = encodeURIComponent(message);
+
+  // WhatsApp ke Sukor
+  window.open("https://wa.me/60169514414?text=" + encodedMessage);
 
   alert("Tempahan berjaya dihantar!");
 
