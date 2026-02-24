@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>AX200S Family Terengganu 2.0</title>
+
+<style>
+body {
+  font-family: Arial;
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  background: #0f0f0f;
+  color: white;
+}
+
+h1 { text-align: center; color: #00ff88; }
+
+input, select, textarea {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0 15px 0;
+  border-radius: 5px;
+  border: none;
+}
+
+button {
+  padding: 10px;
+  background: #00ff88;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+button:hover {
+  background: #00cc6a;
+}
+
+.item-box {
+  border: 1px solid #333;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+
+.total {
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 20px;
+  color: #00ff88;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Tempahan Baju AX200S Family Terengganu 2.0</h1>
+
+<h2>Maklumat Pelanggan</h2>
+
+<input type="text" id="nama" placeholder="Nama Penuh" required>
+<input type="text" id="phone" placeholder="No HP (contoh 60123456789)" required>
+<textarea id="alamat" placeholder="Alamat (Isi jika perlu postage)"></textarea>
+
+<h3>Link Resit Pembayaran (Google Drive)</h3>
+<input type="text" id="resit" placeholder="Paste link resit di sini">
+
+<hr>
+
+<h2>Tambah Item Tempahan</h2>
+
+<select id="kategori">
+<option value="dewasa_pendek">Dewasa Lengan Pendek (RM35)</option>
+<option value="dewasa_panjang">Dewasa Lengan Panjang (RM38)</option>
+<option value="kanak">Kanak-Kanak (RM35)</option>
+</select>
+
+<select id="saiz">
+<option>XS</option><option>S</option><option>M</option>
+<option>L</option><option>XL</option><option>2XL</option>
+<option>3XL</option><option>4XL</option>
+<option>5XL</option><option>6XL</option>
+<option>7XL</option>
+</select>
+
+<input type="number" id="qty" value="1" min="1">
+
+<button onclick="tambahItem()">Tambah Item</button>
+
+<h2>Senarai Tempahan</h2>
+<div id="senarai"></div>
+
+<div class="total">
+Jumlah Keseluruhan: RM <span id="total">0</span>
+</div>
+
+<br>
+<button onclick="hantarOrder()">Hantar Tempahan</button>
+
+<script>
+
+let total = 0;
+let orderList = [];
+
+function kiraHarga(kategori, saiz) {
+
+  if (kategori === "kanak") return 35;
+
+  let harga = (kategori === "dewasa_pendek") ? 35 : 38;
+
+  const tambahan = {
+    "3XL":2,
+    "4XL":4,
+    "5XL":6,
+    "6XL":8,
+    "7XL":10
+  };
+
+  if (tambahan[saiz]) {
+    harga += tambahan[saiz];
+  }
+
+  return harga;
+}
+
+function tambahItem() {
+
+  let kategori = document.getElementById("kategori").value;
+  let saiz = document.getElementById("saiz").value;
+  let qty = parseInt(document.getElementById("qty").value);
+
+  if (qty <= 0) return;
+
+  let harga = kiraHarga(kategori, saiz);
+  let jumlah = harga * qty;
+
+  total += jumlah;
+
+  let detailText =
+    kategori.replace("_"," ").toUpperCase() +
+    " - " + saiz +
+    " x " + qty +
+    " = RM" + jumlah;
+
+  orderList.push(detailText);
+
+  document.getElementById("senarai").innerHTML +=
+    "<div class='item-box'>" + detailText + "</div>";
+
+  document.getElementById("total").innerText = total;
+}
+
+function hantarOrder() {
+
+  let nama = document.getElementById("nama").value;
+  let phone = document.getElementById("phone").value;
+  let alamat = document.getElementById("alamat").value;
+  let resit = document.getElementById("resit").value;
+
+  if (!nama || !phone || orderList.length === 0) {
+    alert("Sila lengkapkan maklumat dan tambah item.");
+    return;
+  }
+
+  let orderDetail = orderList.join(" | ");
+
+  // ====== HANTAR KE GOOGLE SHEET ======
+  fetch("PASTE_GOOGLE_SCRIPT_URL_DI_SINI", {
+    method: "POST",
+    body: JSON.stringify({
+      nama: nama,
+      phone: phone,
+      alamat: alamat,
+      orderDetail: orderDetail,
+      total: total,
+      resit: resit
+    })
+  });
+
+  // ====== FORMAT WHATSAPP ======
+  let message =
+    "Tempahan AX200S Family Terengganu 2.0\n\n" +
+    "Nama: " + nama + "\n" +
+    "No HP: " + phone + "\n" +
+    "Alamat: " + alamat + "\n\n" +
+    orderDetail + "\n\n" +
+    "Jumlah: RM" + total + "\n" +
+    "Resit: " + resit;
+
+  let encoded = encodeURIComponent(message);
+
+  window.open("https://wa.me/" + phone + "?text=" + encoded);
+
+  alert("Tempahan dihantar!");
+}
+
+</script>
+
+</body>
+</html>
