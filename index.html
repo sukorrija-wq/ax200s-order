@@ -16,7 +16,7 @@ body {
 
 h1 {
   text-align: center;
-  color: #ff0000;
+  color: red;
 }
 
 h2 {
@@ -91,10 +91,23 @@ img {
 
 <hr>
 
+<h2>Sila Buat Pembayaran</h2>
+<p style="text-align:center;">
+Scan QR di bawah untuk membuat pembayaran.
+</p>
+
+<img src="qr-payment.png" style="width:300px;">
+
+<p style="text-align:center; font-weight:bold; color:#00ff88;">
+Selepas bayar, paste link resit di bawah.
+</p>
+
+<hr>
+
 <h2>Maklumat Pelanggan</h2>
 
 <input type="text" id="nama" placeholder="Nama Penuh">
-<input type="text" id="phone" placeholder="No HP (contoh 60123456789)">
+<input type="text" id="phone" placeholder="No HP Admin (contoh 60123456789)">
 <textarea id="alamat" placeholder="Alamat (Isi jika perlu postage)"></textarea>
 <input type="text" id="resit" placeholder="Link Resit (Google Drive)">
 
@@ -196,8 +209,8 @@ function hantarOrder() {
 
   let orderDetail = orderList.join(" | ");
 
-  // ==== HANTAR KE GOOGLE SHEET ====
-  fetch(https://script.google.com/macros/s/AKfycbyPQfGyK4PHuJjU8p7Aisfc-bKNvRH7gei4kVbwkRByJbvin4id5SLDxZ8vROLiE301MA/exec, {
+  // ===== GOOGLE SHEET INTEGRATION =====
+  fetch("https://script.google.com/macros/s/AKfycbyPQfGyK4PHuJjU8p7Aisfc-bKNvRH7gei4kVbwkRByJbvin4id5SLDxZ8vROLiE301MA/exec", {
     method: "POST",
     body: JSON.stringify({
       nama: nama,
@@ -209,11 +222,10 @@ function hantarOrder() {
     })
   });
 
-  // ==== FORMAT WHATSAPP ====
+  // ===== WHATSAPP ADMIN =====
   let message =
     "Tempahan AX200S Family Terengganu 2.0\n\n" +
     "Nama: " + nama + "\n" +
-    "No HP: " + phone + "\n" +
     "Alamat: " + alamat + "\n\n" +
     orderDetail + "\n\n" +
     "Jumlah: RM" + total + "\n" +
@@ -224,10 +236,10 @@ function hantarOrder() {
   window.open("https://wa.me/" + phone + "?text=" + encoded);
 
   alert("Tempahan dihantar!");
+
 }
 
 </script>
 
 </body>
 </html>
-
