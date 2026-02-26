@@ -1,149 +1,166 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <base target="_top">
-  <script>
-    let items = [];
+<meta charset="UTF-8">
+<title>Order Baju AX200S Family Terengganu 2.0</title>
 
-    function tambahItem() {
-      let kategori = document.getElementById("kategori").value;
-      let jenis = document.getElementById("jenis").value;
-      let saiz = document.getElementById("saiz").value;
-      let qty = parseInt(document.getElementById("qty").value);
+<script>
+const scriptURL = "https://script.google.com/macros/s/AKfycbxMtGG4n5IdpzaFlZYK4ZWB20RcrV5X9Dawxe1WCQaPFPCjK9HEyhbh7jljQg5X_rGp/exec";
 
-      if (!qty || qty <= 0) {
-        alert("Masukkan kuantiti yang sah");
-        return;
-      }
+let items = [];
 
-      let harga = 0;
+function tambahItem() {
+  let kategori = document.getElementById("kategori").value;
+  let jenis = document.getElementById("jenis").value;
+  let saiz = document.getElementById("saiz").value;
+  let qty = parseInt(document.getElementById("qty").value);
 
-      if (kategori === "Dewasa") {
-        harga = (jenis === "Short Sleeve") ? 35 : 38;
+  if (!qty || qty <= 0) {
+    alert("Masukkan kuantiti yang sah");
+    return;
+  }
 
-        let extra = {
-          "3XL": 2,
-          "4XL": 4,
-          "5XL": 6,
-          "6XL": 8,
-          "7XL": 10
-        };
+  let harga = 0;
 
-        if (extra[saiz]) {
-          harga += extra[saiz];
-        }
+  if (kategori === "Dewasa") {
+    harga = (jenis === "Short Sleeve") ? 35 : 38;
 
-      } else {
-        harga = 35;
-      }
+    const extra = {
+      "3XL": 2,
+      "4XL": 4,
+      "5XL": 6,
+      "6XL": 8,
+      "7XL": 10
+    };
 
-      let totalItem = harga * qty;
-
-      items.push({
-        kategori, jenis, saiz, qty, harga, totalItem
-      });
-
-      paparkanItem();
-      kiraTotal();
-
-      document.getElementById("qty").value = "";
+    if (extra[saiz]) {
+      harga += extra[saiz];
     }
+  } else {
+    harga = 35;
+  }
 
-    function paparkanItem() {
-      let senarai = document.getElementById("senarai");
-      senarai.innerHTML = "";
+  let totalItem = harga * qty;
 
-      items.forEach((item) => {
-        senarai.innerHTML += `
-          <p>
-          ${item.kategori} | ${item.jenis} | ${item.saiz} | 
-          ${item.qty} helai = RM${item.totalItem}
-          </p>
-        `;
-      });
-    }
+  items.push({ kategori, jenis, saiz, qty, totalItem });
 
-    function kiraTotal() {
-      let total = items.reduce((sum, item) => sum + item.totalItem, 0);
-      document.getElementById("jumlah").value = total;
-    }
+  paparkanItem();
+  kiraTotal();
+  document.getElementById("qty").value = "";
+}
 
-    function sebelumSubmit() {
-      let detailText = items.map(item =>
-        `${item.kategori}-${item.jenis}-${item.saiz} x${item.qty}`
-      ).join(" | ");
+function paparkanItem() {
+  let senarai = document.getElementById("senarai");
+  senarai.innerHTML = "";
 
-      document.getElementById("detail").value = detailText;
+  items.forEach((item, index) => {
+    senarai.innerHTML += `
+      <p>
+      ${item.kategori} | ${item.jenis} | ${item.saiz} |
+      ${item.qty} helai = RM${item.totalItem}
+      </p>
+    `;
+  });
+}
 
-      if (items.length === 0) {
-        alert("Sila tambah sekurang-kurangnya satu item.");
-        return false;
-      }
-    }
-  </script>
+function kiraTotal() {
+  let total = items.reduce((sum, item) => sum + item.totalItem, 0);
+  document.getElementById("jumlah").value = total;
+}
+
+function hantarTempahan(event) {
+  event.preventDefault();
+
+  if (items.length === 0) {
+    alert("Sila tambah sekurang-kurangnya satu item.");
+    return;
+  }
+
+  let detailText = items.map(item =>
+    `${item.kategori}-${item.jenis}-${item.saiz} x${item.qty}`
+  ).join(" | ");
+
+  let formData = new FormData();
+  formData.append("nama", document.getElementById("nama").value);
+  formData.append("telefon", document.getElementById("telefon").value);
+  formData.append("alamat", document.getElementById("alamat").value);
+  formData.append("detail", detailText);
+  formData.append("jumlah", document.getElementById("jumlah").value);
+
+  fetch(scriptURL, { method: "POST", body: formData })
+    .then(response => {
+      alert("✅ Tempahan berjaya dihantar!");
+      document.getElementById("orderForm").reset();
+      document.getElementById("senarai").innerHTML = "";
+      document.getElementById("jumlah").value = "";
+      items = [];
+    })
+    .catch(error => alert("❌ Ralat! Sila cuba lagi."));
+}
+</script>
 </head>
 
 <body>
-  <h2>Order Baju AX200S Family Terengganu 2.0</h2>
 
-  <form method="post" onsubmit="return sebelumSubmit()">
+<h2>Order Baju AX200S Family Terengganu 2.0</h2>
 
-    Nama:<br>
-    <input type="text" name="nama" required><br><br>
+<form id="orderForm" onsubmit="hantarTempahan(event)">
 
-    No Telefon:<br>
-    <input type="text" name="telefon" required><br><br>
+Nama:<br>
+<input type="text" id="nama" required><br><br>
 
-    Alamat Penghantaran:<br>
-    <textarea name="alamat" required></textarea><br><br>
+No Telefon:<br>
+<input type="text" id="telefon" required><br><br>
 
-    <hr>
-    <h3>Tambah Item</h3>
+Alamat Penghantaran:<br>
+<textarea id="alamat" required></textarea><br><br>
 
-    Kategori:
-    <select id="kategori">
-      <option>Dewasa</option>
-      <option>Kanak-Kanak</option>
-    </select><br><br>
+<hr>
+<h3>Tambah Item</h3>
 
-    Jenis:
-    <select id="jenis">
-      <option>Short Sleeve</option>
-      <option>Long Sleeve</option>
-    </select><br><br>
+Kategori:
+<select id="kategori">
+  <option>Dewasa</option>
+  <option>Kanak-Kanak</option>
+</select><br><br>
 
-    Saiz:
-    <select id="saiz">
-      <option>XS</option>
-      <option>S</option>
-      <option>M</option>
-      <option>L</option>
-      <option>XL</option>
-      <option>2XL</option>
-      <option>3XL</option>
-      <option>4XL</option>
-      <option>5XL</option>
-      <option>6XL</option>
-      <option>7XL</option>
-    </select><br><br>
+Jenis:
+<select id="jenis">
+  <option>Short Sleeve</option>
+  <option>Long Sleeve</option>
+</select><br><br>
 
-    Kuantiti:
-    <input type="number" id="qty"><br><br>
+Saiz:
+<select id="saiz">
+  <option>XS</option>
+  <option>S</option>
+  <option>M</option>
+  <option>L</option>
+  <option>XL</option>
+  <option>2XL</option>
+  <option>3XL</option>
+  <option>4XL</option>
+  <option>5XL</option>
+  <option>6XL</option>
+  <option>7XL</option>
+</select><br><br>
 
-    <button type="button" onclick="tambahItem()">Tambah Item</button>
+Kuantiti:
+<input type="number" id="qty"><br><br>
 
-    <hr>
+<button type="button" onclick="tambahItem()">Tambah Item</button>
 
-    <h3>Senarai Order</h3>
-    <div id="senarai"></div>
+<hr>
 
-    <h3>Total Bayaran (RM)</h3>
-    <input type="text" name="jumlah" id="jumlah" readonly><br><br>
+<h3>Senarai Order</h3>
+<div id="senarai"></div>
 
-    <input type="hidden" name="detail" id="detail">
+<h3>Total Bayaran (RM)</h3>
+<input type="text" id="jumlah" readonly><br><br>
 
-    <button type="submit">Hantar Tempahan</button>
+<button type="submit">Hantar Tempahan</button>
 
-  </form>
+</form>
+
 </body>
 </html>
