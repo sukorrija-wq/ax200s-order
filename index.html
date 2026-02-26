@@ -64,8 +64,16 @@ function paparkanItem() {
 }
 
 function kiraTotal() {
-  let total = items.reduce((sum, item) => sum + item.totalItem, 0);
+  let total = 0;
+  let totalHelai = 0;
+
+  items.forEach(item => {
+    total += item.totalItem;
+    totalHelai += item.qty;
+  });
+
   document.getElementById("jumlah").value = total;
+  document.getElementById("totalHelai").value = totalHelai;
 }
 
 function hantarTempahan(event) {
@@ -86,6 +94,7 @@ function hantarTempahan(event) {
   formData.append("alamat", document.getElementById("alamat").value);
   formData.append("detail", detailText);
   formData.append("jumlah", document.getElementById("jumlah").value);
+  formData.append("totalHelai", document.getElementById("totalHelai").value);
 
   fetch(scriptURL, { method: "POST", body: formData })
     .then(response => response.json())
@@ -158,6 +167,9 @@ Kuantiti:
 
 <h3>Senarai Order</h3>
 <div id="senarai"></div>
+
+<h3>Total Helai</h3>
+<input type="text" id="totalHelai" readonly><br><br>
 
 <h3>Total Bayaran (RM)</h3>
 <input type="text" id="jumlah" readonly><br><br>
