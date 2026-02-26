@@ -4,8 +4,82 @@
 <meta charset="UTF-8">
 <title>Order Baju AX200S Family Terengganu 2.0</title>
 
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  display: flex;
+  gap: 40px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.left {
+  flex: 1;
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.right {
+  flex: 1;
+}
+
+.right img {
+  width: 100%;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+h2 {
+  margin-top: 0;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+button[type="button"] {
+  background: #007bff;
+  color: white;
+}
+
+button[type="submit"] {
+  background: #28a745;
+  color: white;
+  font-weight: bold;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+hr {
+  margin: 25px 0;
+}
+</style>
+
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbzl_YwApwDr6yiw9iwhm_aRgJrQLnWIx0C3H9H5s5SRHmATeo0505sznLF9rENb6ZiQ/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbyCR87kDm21U-Jf99eAtAgtMXCM3a0xdxhkhUIwpBeJZ8qN6_pcT5_679DO7jgjfJLa/exec";
 
 let items = [];
 
@@ -33,9 +107,7 @@ function tambahItem() {
       "7XL": 10
     };
 
-    if (extra[saiz]) {
-      harga += extra[saiz];
-    }
+    if (extra[saiz]) harga += extra[saiz];
   } else {
     harga = 35;
   }
@@ -97,7 +169,7 @@ function hantarTempahan(event) {
   formData.append("totalHelai", document.getElementById("totalHelai").value);
 
   fetch(scriptURL, { method: "POST", body: formData })
-    .then(response => response.json())
+    .then(response => response.text())
     .then(data => {
       alert("✅ Tempahan berjaya dihantar!");
       document.getElementById("orderForm").reset();
@@ -107,7 +179,6 @@ function hantarTempahan(event) {
       items = [];
     })
     .catch(error => {
-      console.error(error);
       alert("❌ Ralat! Sila cuba lagi.");
     });
 }
@@ -116,69 +187,82 @@ function hantarTempahan(event) {
 
 <body>
 
-<h2>Order Baju AX200S Family Terengganu 2.0</h2>
+<div class="container">
 
-<form id="orderForm" onsubmit="hantarTempahan(event)">
+  <div class="left">
+    <h2>Order Baju AX200S Family Terengganu 2.0</h2>
 
-Nama:<br>
-<input type="text" id="nama" required><br><br>
+    <form id="orderForm" onsubmit="hantarTempahan(event)">
 
-No Telefon:<br>
-<input type="text" id="telefon" required><br><br>
+      Nama:
+      <input type="text" id="nama" required>
 
-Alamat Penghantaran:<br>
-<textarea id="alamat" required></textarea><br><br>
+      No Telefon:
+      <input type="text" id="telefon" required>
 
-<hr>
-<h3>Tambah Item</h3>
+      Alamat Penghantaran:
+      <textarea id="alamat" required></textarea>
 
-Kategori:
-<select id="kategori">
-  <option>Dewasa</option>
-  <option>Kanak-Kanak</option>
-</select><br><br>
+      <hr>
 
-Jenis:
-<select id="jenis">
-  <option>Short Sleeve</option>
-  <option>Long Sleeve</option>
-</select><br><br>
+      <h3>Tambah Item</h3>
 
-Saiz:
-<select id="saiz">
-  <option>XS</option>
-  <option>S</option>
-  <option>M</option>
-  <option>L</option>
-  <option>XL</option>
-  <option>2XL</option>
-  <option>3XL</option>
-  <option>4XL</option>
-  <option>5XL</option>
-  <option>6XL</option>
-  <option>7XL</option>
-</select><br><br>
+      Kategori:
+      <select id="kategori">
+        <option>Dewasa</option>
+        <option>Kanak-Kanak</option>
+      </select>
 
-Kuantiti:
-<input type="number" id="qty"><br><br>
+      Jenis:
+      <select id="jenis">
+        <option>Short Sleeve</option>
+        <option>Long Sleeve</option>
+      </select>
 
-<button type="button" onclick="tambahItem()">Tambah Item</button>
+      Saiz:
+      <select id="saiz">
+        <option>XS</option>
+        <option>S</option>
+        <option>M</option>
+        <option>L</option>
+        <option>XL</option>
+        <option>2XL</option>
+        <option>3XL</option>
+        <option>4XL</option>
+        <option>5XL</option>
+        <option>6XL</option>
+        <option>7XL</option>
+      </select>
 
-<hr>
+      Kuantiti:
+      <input type="number" id="qty">
 
-<h3>Senarai Order</h3>
-<div id="senarai"></div>
+      <button type="button" onclick="tambahItem()">Tambah Item</button>
 
-<h3>Total Helai</h3>
-<input type="text" id="totalHelai" readonly><br><br>
+      <hr>
 
-<h3>Total Bayaran (RM)</h3>
-<input type="text" id="jumlah" readonly><br><br>
+      <h3>Senarai Order</h3>
+      <div id="senarai"></div>
 
-<button type="submit">Hantar Tempahan</button>
+      <h3>Total Helai</h3>
+      <input type="text" id="totalHelai" readonly>
 
-</form>
+      <h3>Total Bayaran (RM)</h3>
+      <input type="text" id="jumlah" readonly>
+
+      <button type="submit">Hantar Tempahan</button>
+
+    </form>
+  </div>
+
+  <div class="right">
+    <img src="baju-ax200s.jpg">
+    <img src="harga-saiz-besar.jpg">
+    <img src="size-chart.jpg">
+    <img src="qr-payment.png">
+  </div>
+
+</div>
 
 </body>
 </html>
-
