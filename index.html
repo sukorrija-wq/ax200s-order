@@ -5,7 +5,7 @@
 <title>Order Baju AX200S Family Terengganu 2.0</title>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbxVRvfObsmVxZrDKsY6IOIaxuNtj2wEEid0JcA09yTBdtqsuMkhknEucJcCvm5SYoOW/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbyCR87kDm21U-Jf99eAtAgtMXCM3a0xdxhkhUIwpBeJZ8qN6_pcT5_679DO7jgjfJLa/exec";
 
 let items = [];
 
@@ -103,6 +103,7 @@ function hantarTempahan(event) {
       document.getElementById("orderForm").reset();
       document.getElementById("senarai").innerHTML = "";
       document.getElementById("jumlah").value = "";
+      document.getElementById("totalHelai").value = "";
       items = [];
     })
     .catch(error => {
