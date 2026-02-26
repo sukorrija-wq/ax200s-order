@@ -5,7 +5,7 @@
 <title>Order Baju AX200S Family Terengganu 2.0</title>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbxMtGG4n5IdpzaFlZYK4ZWB20RcrV5X9Dawxe1WCQaPFPCjK9HEyhbh7jljQg5X_rGp/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbxVRvfObsmVxZrDKsY6IOIaxuNtj2wEEid0JcA09yTBdtqsuMkhknEucJcCvm5SYoOW/exec";
 
 let items = [];
 
@@ -53,7 +53,7 @@ function paparkanItem() {
   let senarai = document.getElementById("senarai");
   senarai.innerHTML = "";
 
-  items.forEach((item, index) => {
+  items.forEach((item) => {
     senarai.innerHTML += `
       <p>
       ${item.kategori} | ${item.jenis} | ${item.saiz} |
@@ -88,14 +88,18 @@ function hantarTempahan(event) {
   formData.append("jumlah", document.getElementById("jumlah").value);
 
   fetch(scriptURL, { method: "POST", body: formData })
-    .then(response => {
+    .then(response => response.json())
+    .then(data => {
       alert("✅ Tempahan berjaya dihantar!");
       document.getElementById("orderForm").reset();
       document.getElementById("senarai").innerHTML = "";
       document.getElementById("jumlah").value = "";
       items = [];
     })
-    .catch(error => alert("❌ Ralat! Sila cuba lagi."));
+    .catch(error => {
+      console.error(error);
+      alert("❌ Ralat! Sila cuba lagi.");
+    });
 }
 </script>
 </head>
